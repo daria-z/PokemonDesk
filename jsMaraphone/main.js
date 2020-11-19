@@ -28,7 +28,7 @@ function init() {
   console.log("Start Game!");
   renderHP(character);
   renderHP(enemy);
-  renderLog(); 
+  renderLog();
 }
 
 function renderLog() {
@@ -69,15 +69,14 @@ function random(num) {
 }
 
 function divineChangeHP(count, person) {
-  if (person.damageHP + count >= 100) {
-    person.damageHP -= count * 10;
+  if (person.damageHP >= 50) {
+    person.damageHP -= count * 3;
   }
   if (person.damageHP < count) {
     person.damageHP = 0;
     alert("Бедный " + person.name + " проиграл бой");
-    $btn.disabled = true;
   } else {
-    person.damageHP += count;
+    person.damageHP -= 10;
   }
 
   $btnIntervention.disabled = true;
@@ -87,7 +86,6 @@ function divineChangeHP(count, person) {
 
 $btnIntervention.addEventListener("click", function () {
   console.log("Divine Intervention!");
-  divineChangeHP(random(20), character);
   divineChangeHP(random(20), enemy);
   renderLog();
 });
