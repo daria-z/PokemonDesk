@@ -1,32 +1,93 @@
-function getRow(firstRow, secondRow, letter) {
+const $btn = document.getElementById("btn-kick");
+const $btnIntervention = document.getElementById("btn-intervention");
 
-  function countLetterInRow(letter, row) {
-    let symbolCounter = 0;
-    for (let i=0; i<=row.length; i++) {
-      if (row.charAt(i) === letter) {
-        symbolCounter++
-      };
-    };
+const character = {
+  name: "Pikachu",
+  defaultHP: 100,
+  damageHP: 100,
+  elHP: document.getElementById("health-character"),
+  elProgressbar: document.getElementById("progressbar-character"),
+};
 
-    return symbolCounter;
-  }
+const enemy = {
+  name: "Charmander",
+  defaultHP: 100,
+  damageHP: 100,
+  elHP: document.getElementById("health-enemy"),
+  elProgressbar: document.getElementById("progressbar-enemy"),
+};
 
-  const firstRowSymbolsCount = countLetterInRow(letter, firstRow);
+$btn.addEventListener("click", function () {
+  console.log("kick");
+  changeHP(random(20), character);
+  changeHP(random(20), enemy);
+  renderLog();
+});
 
-  const secondRowSymbolsCount = countLetterInRow(letter, secondRow);
-
-  if (firstRowSymbolsCount > secondRowSymbolsCount) {
-    return firstRow;
-  } else {
-    return secondRow;
-  }
+function init() {
+  console.log("Start Game!");
+  renderHP(character);
+  renderHP(enemy);
+  renderLog();
 }
 
+function renderLog() {
+  const $character = document.getElementById("health-character");
+  console.log($character);
 
-let letter = prompt('какую букву ищем?', 'а');
+  const $enemy = document.getElementById("health-enemy");
+  console.log($enemy);
+}
 
-let firstRow = prompt('первая строка:', 'мама мыла раму');
-let secondRow = prompt('вторая строка:', 'собака друг человека');
+function renderHP(person) {
+  renderHpLife(person);
+  renderProgressbarHP(person);
+}
 
-alert(`Победила строка: ${getRow(firstRow, secondRow, letter)}`); // мама мыла раму
+function renderHpLife(person) {
+  person.elHP.innerText = person.damageHP + " / " + person.defaultHP;
+}
 
+function renderProgressbarHP(person) {
+  person.elProgressbar.style.width = person.damageHP + "%";
+}
+
+function changeHP(count, person) {
+  if (person.damageHP < count) {
+    person.damageHP = 0;
+    alert("Бедный " + person.name + " проиграл бой");
+    $btn.disabled = true;
+  } else {
+    person.damageHP -= count;
+  }
+
+  renderHP(person);
+}
+
+function random(num) {
+  return Math.ceil(Math.random() * num);
+}
+
+function divineChangeHP(count, person) {
+  if (person.damageHP >= 50) {
+    person.damageHP -= count * 3;
+  }
+  if (person.damageHP < count) {
+    person.damageHP = 0;
+    alert("Бедный " + person.name + " проиграл бой");
+  } else {
+    person.damageHP -= 10;
+  }
+
+  $btnIntervention.disabled = true;
+
+  renderHP(person);
+}
+
+$btnIntervention.addEventListener("click", function () {
+  console.log("Divine Intervention!");
+  divineChangeHP(random(20), enemy);
+  renderLog();
+});
+
+init();
