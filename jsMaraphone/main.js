@@ -3,8 +3,9 @@ function $getElByID(id) {
 }
 
 const $btn = $getElByID("btn-kick");
+const $btn2 = $getElByID("btn-kick-2");
 const $btnIntervention = $getElByID("btn-intervention");
-const $logs = document.querySelector('#logs');
+const $logs = document.querySelector("#logs");
 
 const character = {
   name: "Pikachu",
@@ -30,16 +31,56 @@ const enemy = {
   renderProgressbarHP: renderProgressbarHP,
 };
 
-$btn.addEventListener("click", function () {
-  console.log("kick");
+const addTextOnButton = (btn) => {
+  const btnText = btn.textContent;
+
+  return (changeText = (text) => {
+    btn.innerText = btnText + "осталось попыток: " + text;
+  });
+};
+
+const click = (max, btn) => {
+  let clickNumber = max;
+
+  const addText = addTextOnButton(btn);
+  addText(clickNumber);
+
+  return (clickMeter = () => {
+    if (clickNumber === 0) {
+      btn.disabled = true;
+    } else {
+      clickNumber -= 1;
+      addText(clickNumber);
+    }
+    console.log(clickNumber);
+  });
+};
+
+const addButtonActions = (btn, actionsNumber = 6, actions) => {
+  const clickCounter = click(actionsNumber, btn);
+
+  btn.addEventListener("click", function () {
+    console.log("kick");
+    clickCounter();
+    if (actions !== undefined) {
+      actions();
+    }
+  });
+};
+
+
+addFightActions = () => {
   character.changeHP(random(20));
   enemy.changeHP(random(20));
-});
+}
+
 
 function init() {
   console.log("Start Game!");
   character.renderHP();
   enemy.renderHP();
+  addButtonActions($btn, 4, addFightActions);
+  addButtonActions($btn2);
 }
 
 function renderHP() {
@@ -60,13 +101,15 @@ function renderProgressbarHP() {
 function changeHP(count) {
   this.damageHP -= count;
 
-  const log = this === enemy ? generateLog(this, character, count, this.damageHP) : generateLog(this, enemy, count, this.damageHP);
+  const log =
+    this === enemy
+      ? generateLog(this, character, count, this.damageHP)
+      : generateLog(this, enemy, count, this.damageHP);
   console.log(log);
 
-  const $p =document.createElement('p');
+  const $p = document.createElement("p");
   $p.innerText = log;
   $logs.insertBefore($p, $logs.children[0]);
-
 
   if (this.damageHP <= 0) {
     this.damageHP = 0;
@@ -77,9 +120,7 @@ function changeHP(count) {
   this.renderHP();
 }
 
-function random(num) {
-  return Math.ceil(Math.random() * num);
-}
+random = (num) => Math.ceil(Math.random() * num);
 
 function generateLog(firstPerson, secondPerson, count, damageHP) {
   const logs = [
@@ -97,6 +138,5 @@ function generateLog(firstPerson, secondPerson, count, damageHP) {
 
   return logs[random(logs.length) - 1];
 }
-
 
 init();
