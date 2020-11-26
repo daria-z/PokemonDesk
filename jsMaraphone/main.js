@@ -31,56 +31,41 @@ const enemy = {
   renderProgressbarHP: renderProgressbarHP,
 };
 
-const addTextOnButton = (btn) => {
-  const btnText = btn.textContent;
 
-  return (changeText = (text) => {
-    btn.innerText = btnText + "осталось попыток: " + text;
-  });
-};
-
-const click = (max, btn) => {
-  let clickNumber = max;
-
-  const addText = addTextOnButton(btn);
-  addText(clickNumber);
-
-  return (clickMeter = () => {
-    if (clickNumber === 0) {
+function countBtn(count = 6, btn) {
+  const innerText = btn.innerText;
+  btn.innerText = `${innerText} (${count})`;
+  return function () {
+    count--;
+    if (count === 0) {
       btn.disabled = true;
-    } else {
-      clickNumber -= 1;
-      addText(clickNumber);
     }
-    console.log(clickNumber);
-  });
-};
+    btn.innerText = `${innerText} (${count})`;
+    return count;
 
-const addButtonActions = (btn, actionsNumber = 6, actions) => {
-  const clickCounter = click(actionsNumber, btn);
-
-  btn.addEventListener("click", function () {
-    console.log("kick");
-    clickCounter();
-    if (actions !== undefined) {
-      actions();
-    }
-  });
-};
+  }
+}
 
 
-addFightActions = () => {
+btnCountJolt = countBtn(6, $btn);
+
+btnElectroBall = countBtn(6, $btn);
+
+$btn.addEventListener("click", function () {
+  character.changeHP(random(60, 20));
+  enemy.changeHP(random(60, 20));
+});
+
+$btn2.addEventListener("click", function () {
   character.changeHP(random(20));
   enemy.changeHP(random(20));
-}
+});
 
 
 function init() {
   console.log("Start Game!");
   character.renderHP();
   enemy.renderHP();
-  addButtonActions($btn, 4, addFightActions);
-  addButtonActions($btn2);
 }
 
 function renderHP() {
@@ -120,7 +105,10 @@ function changeHP(count) {
   this.renderHP();
 }
 
-random = (num) => Math.ceil(Math.random() * num);
+function random(max, min = 0) {
+  const num = max - min;
+  return Math.ceil(Math.random() * num) + min;
+}
 
 function generateLog(firstPerson, secondPerson, count, damageHP) {
   const logs = [
