@@ -35,13 +35,14 @@ body {
 }
 
 .control {
-    width: 320px;
+    width: 400px;
     height: 260px;
     position: relative;
     margin: 20px;
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
+    flex-wrap: wrap;
 }
 
 .playground {
@@ -276,6 +277,7 @@ body {
     outline: none !important;
     cursor: pointer;
     font-size: 18px;
+    text-transform: capitalize;
 
 }
 .button:after {
