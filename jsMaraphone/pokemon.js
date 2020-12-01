@@ -1,14 +1,31 @@
 const $logs = document.querySelector("#logs");
 import generateLog from "./fightLog.js";
-class Pokemon {
-  constructor(props) {
-    this.name = props.name;
-    this.defaultHP = props.defaultHP;
-    this.damageHP = props.damageHP;
-    this.elHP = props.elHP;
-    this.elProgressbar = props.elProgressbar;
-    this.changeHp = props.changeHp;
+import { getElByID } from "./utils.js"
+
+class Selectors {
+  constructor(name) {
+    this.elHP =  getElByID(`health-${name}`);
+    this.elProgressbar =  getElByID(`progressbar-${name}`);
   }
+}
+class Pokemon extends Selectors{
+  constructor({name, hp, type, selectors, img, attacks}) {
+    super(selectors);
+    this.name = name;
+    this.type = type;
+    this.defaultHP = hp;
+    this.damageHP = hp;
+    this.avatar = img;
+    this.selectors = selectors;
+    this.attacks = attacks;
+  }
+
+  renderPokemonView = () => {
+    const $elImg = getElByID(`img-${this.selectors}`);
+    $elImg.src = this.avatar;
+    const $elName = getElByID(`name-${this.selectors}`);
+    $elName.innerText = this.name;
+  };
 
   renderHP = () => {
     this.renderHpLife();
@@ -25,7 +42,7 @@ class Pokemon {
     elProgressbar.style.width = damageHP + "%";
   };
 
-  changeHP = (btn, count, charcter, enemy) => {
+  changeHP = (count, character, enemy) => {
     this.damageHP -= count;
 
     const log =
@@ -41,11 +58,15 @@ class Pokemon {
     if (this.damageHP <= 0) {
       this.damageHP = 0;
       alert("Бедный " + this.name + " проиграл бой");
-      btn.disabled = true;
     }
-
     this.renderHP();
   };
+
+  renderPokemon() {
+    this.renderHP();
+    this.renderPokemonView();
+  }
+
 }
 
 export default Pokemon;

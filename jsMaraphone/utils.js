@@ -20,3 +20,4 @@ export function countBtn(count = 6, btn) {
     return count;
   };
 }
+
