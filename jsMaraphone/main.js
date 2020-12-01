@@ -1,59 +1,71 @@
 import Pokemon from "./pokemon.js";
-import { random, getElByID, countBtn } from "./utils.js";
-import generatePokemon from "./pokemons.js";
+import { countBtn } from "./utils.js";
 
-const $control = document.querySelector(".control");
-const $btnStart = getElByID("start-game");
+class Game {
+  getPokemons = async () => {
+    const response = await fetch(
+      "https://reactmarathon-api.netlify.app/api/pokemons?random=true"
+    );
+    const body = await response.json();
+    return body;
+  };
 
-$btnStart.addEventListener("click", function () {
-  console.log("Start Game!");
+  getDamage = async (characterId, enemyId, attackId) => {
+    const response = await fetch(
+      `https://reactmarathon-api.netlify.app/api/fight?player1id=${characterId}&attackId=${attackId}&player2id=${enemyId}`
+    );
+    const body = await response.json();
+    return body;
+  };
 
-  let player1 = new Pokemon({
-    ...generatePokemon(),
-    selectors: "player1",
-  });
+  start = async () => {
+    const pokemon1 = await this.getPokemons();
+    const pokemon2 = await this.getPokemons();
 
-  let player2 = new Pokemon({
-    ...generatePokemon(),
-    selectors: "player2",
-  });
-
-  player1.renderPokemon();
-  player2.renderPokemon();
-  $btnStart.remove();
-  renderAttacks(player1, player2);
-});
-
-function renderAttacks(player1, player2) {
-  player1.attacks.forEach((item) => {
-    const $btn = document.createElement("button");
-    $btn.classList.add("button");
-    $btn.innerText = item.name;
-    $control.appendChild($btn);
-    let btnCount = countBtn(item.maxCount, $btn);
-
-    $btn.addEventListener("click", () => {
-      player2.changeHP(
-        random(item.maxDamage, item.minDamage),
-        player2,
-        player1
-      );
-      player1.changeHP(
-        random(player2.attacks[0].maxDamage, player2.attacks[0].minDamage),
-        player1,
-        player2
-      );
-      btnCount();
-
-      if (player2.damageHP <= 0) {
-        restartGame();
-      }
+    let player1 = new Pokemon({
+      ...pokemon1,
+      selectors: "player1",
     });
-  });
+
+    let player2 = new Pokemon({
+      ...pokemon2,
+      selectors: "player2",
+    });
+
+    player1.renderPokemon();
+    player2.renderPokemon();
+
+    const $control = document.querySelector(".control");
+    player1.attacks.forEach((item) => {
+      const $btn = document.createElement("button");
+      $btn.classList.add("button");
+      $btn.innerText = item.name;
+      $control.appendChild($btn);
+      const btnCount = countBtn(item.maxCount, $btn);
+
+
+      $btn.addEventListener("click", () => {
+        const kick = async () => {
+          const damage = await this.getDamage(player1.id, player2.id, item.id);
+          player2.changeHP(
+            damage.kick.player2,
+            player2,
+            player1
+          );
+          player1.changeHP(
+            damage.kick.player1,
+            player1,
+            player2
+          );
+          btnCount();
+        };
+
+        kick();
+      });
+    });
+  };
 }
 
-function restartGame() {
-  const allButtons = document.querySelectorAll(".control .button");
-  allButtons.forEach(($item) => $item.remove());
-  $control.appendChild($btnStart);
-}
+const game = new Game();
+
+game.start();
