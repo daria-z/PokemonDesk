@@ -2,6 +2,7 @@ const $logs = document.querySelector("#logs");
 import generateLog from "./fightLog.js";
 import { getElByID } from "./utils.js"
 
+
 class Selectors {
   constructor(name) {
     this.elHP =  getElByID(`health-${name}`);
@@ -9,8 +10,9 @@ class Selectors {
   }
 }
 class Pokemon extends Selectors{
-  constructor({name, hp, type, selectors, img, attacks}) {
+  constructor({id, name, hp, type, selectors, img, attacks}) {
     super(selectors);
+    this.id = id;
     this.name = name;
     this.type = type;
     this.defaultHP = hp;
